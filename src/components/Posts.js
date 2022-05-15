@@ -4,7 +4,7 @@ import _ from "lodash"; //lookup lodash
 import Table from "react-bootstrap/Table";
 
 const pageSize = 10;
-export default function Posts() {
+const Posts = () => {
   const [_posts, set_posts] = useState();
   const [paginatedPosts, setPaginatedPosts] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,12 +21,12 @@ export default function Posts() {
   if (pageCount === 1) return null;
   const pages = _.range(1, pageCount + 1);
 
-  const pagination = (pageNo) => {
+  function pagination(pageNo) {
     setCurrentPage(pageNo);
     const startIndex = (pageNo - 1) * pageSize;
     const paginatedPosts = _(_posts).slice(startIndex).take(pageSize).value();
     setPaginatedPosts(paginatedPosts);
-  };
+  }
   return (
     <div>
       {!paginatedPosts ? (
@@ -74,4 +74,6 @@ export default function Posts() {
       </nav>
     </div>
   );
-}
+};
+
+export default Posts;
