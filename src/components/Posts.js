@@ -4,16 +4,17 @@ import _ from "lodash"; //lookup lodash
 import Table from "react-bootstrap/Table";
 
 const pageSize = 10;
+const people = [];
 const Posts = () => {
   const [_posts, set_posts] = useState();
   const [paginatedPosts, setPaginatedPosts] = useState();
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    axios.get("https://swapi.dev/api/people/").then((res) => {
-      console.log(res.data.results);
-      set_posts(res.data.results);
-      setPaginatedPosts(_(res.data.results).slice(0).take(pageSize).value());
+    axios.get("https://swapi.dev/api/people/?page=1").then((res) => {
+      console.log(res.data);
+      set_posts({ people: res.data });
+      setPaginatedPosts(_(res.data).slice(0).take(pageSize).value());
     });
   }, []);
 
@@ -27,6 +28,7 @@ const Posts = () => {
     const paginatedPosts = _(_posts).slice(startIndex).take(pageSize).value();
     setPaginatedPosts(paginatedPosts);
   }
+
   return (
     <div>
       {!paginatedPosts ? (
@@ -44,8 +46,8 @@ const Posts = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedPosts.map((_post, index) => (
-              <tr key={index}>
+            {paginatedPosts.map((_post) => (
+              <tr key={_post}>
                 <td>{_post.name}</td>
                 <td>{_post.birth_year}</td>
                 <td>{_post.height}</td>
