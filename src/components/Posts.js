@@ -46,8 +46,8 @@ const Posts = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedPosts.map((_post) => (
-              <tr key={_post}>
+            {paginatedPosts.map((_post, index) => (
+              <tr key={index}>
                 <td>{_post.name}</td>
                 <td>{_post.birth_year}</td>
                 <td>{_post.height}</td>
