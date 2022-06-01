@@ -1,81 +1,113 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import _ from "lodash"; //lookup lodash
 import Table from "react-bootstrap/Table";
+import ReactPaginate from "react-paginate";
 
-const pageSize = 10;
-const people = [];
-const Posts = () => {
-  const [_posts, set_posts] = useState();
-  const [paginatedPosts, setPaginatedPosts] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
+export default function Posts() {
+  const [characterList, setCharacterList] = useState([]);
+  const [pageNumber, setPageNumber] = useState(0);
 
   useEffect(() => {
-    axios.get("https://swapi.dev/api/people/?page=1").then((res) => {
-      console.log(res.data);
-      set_posts({ people: res.data });
-      setPaginatedPosts(_(res.data).slice(0).take(pageSize).value());
-    });
+    getCharacters("https://swapi.dev/api/people/");
   }, []);
 
-  const pageCount = _posts ? Math.ceil(_posts.length / pageSize) : 0;
-  if (pageCount === 1) return null;
-  const pages = _.range(1, pageCount + 1);
+  const getCharacters = (url) => {
+    axios.get(url).then((response) => {
+      let characters = response.data.results;
+      console.log("characters:", characters);
 
-  function pagination(pageNo) {
-    setCurrentPage(pageNo);
-    const startIndex = (pageNo - 1) * pageSize;
-    const paginatedPosts = _(_posts).slice(startIndex).take(pageSize).value();
-    setPaginatedPosts(paginatedPosts);
-  }
+      characters = Promise.all(
+        characters.map(async (character) => {
+          character.homeworld = await getHomeworld(character.homeworld);
+          if (!character.species[0]) {
+            character.species = "Human";
+          } else character.species = await getSpecies(character.species);
+          return character;
+        })
+      );
+      characters.then((characters) => {
+        console.log(characters);
+        setCharacterList(characters);
+      });
+    });
+  };
+
+  // const = (url) => {
+  //   axios.get(url).then((response) => {
+  //   console.log(res.data.next);
+  //   setCharacterList(res.data.results);
+  //   if(res.data.next) setNext(res.data.next)
+  //   });
+  // };
+
+  // function showDetail(data) {
+  //   for (i = 0; i < data.results.length; i++) {
+  //     console.log(data.results.name);
+  //   }
+  // }
+
+  //helper functions
+  const getHomeworld = async (homeworldURL) => {
+    const response = await axios.get(homeworldURL);
+    return response.data.name;
+  };
+
+  const getSpecies = async (speciesURL) => {
+    const response = await axios.get(speciesURL);
+    return response.data.name;
+  };
 
   return (
-    <div>
-      {!paginatedPosts ? (
-        "No data found"
-      ) : (
-        <Table striped bordered hover className="project--table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Birth Year</th>
-              <th>Height</th>
-              <th>Mass</th>
-              <th>Species</th>
-              <th>Home World</th>
+    <>
+      <Table stripped bordered hover className="project--table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Birth Year</th>
+            <th>Height</th>
+            <th>Mass</th>
+            <th>Homeworld</th>
+            <th>Species</th>
+          </tr>
+        </thead>
+        <tbody>
+          {characterList.map((character) => (
+            <tr key={character.name}>
+              <td>{character.name}</td>
+              <td>{character.birth_year}</td>
+              <td>{character.height}</td>
+              <td>{character.mass}</td>
+              <td>{character.homeworld}</td>
+              <td>{character.species}</td>
             </tr>
-          </thead>
-          <tbody>
-            {paginatedPosts.map((_post, index) => (
-              <tr key={index}>
-                <td>{_post.name}</td>
-                <td>{_post.birth_year}</td>
-                <td>{_post.height}</td>
-                <td>{_post.mass}</td>
-                <td>{_post.species}</td>
-                <td>{_post.home_world}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-      <nav className="d-flex justify-content-center">
-        <ul className="pagination">
-          {pages.map((page) => (
-            <li
-              className={
-                page === currentPage ? "page-item active" : "page-item"
-              }
-            >
-              <p className="page-link" onClick={() => pagination(page)}>
-                {page}
-              </p>
-            </li>
           ))}
-        </ul>
-      </nav>
-    </div>
+        </tbody>
+      </Table>
+    </>
   );
-};
+}
 
-export default Posts;
+// useEffect(() => {
+//   axios
+//     .get("https://swapi.dev/api/people/")
+//     .then((res) => {
+//       console.log(res);
+//       setCharacterData(res.data.results);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }, []);
+
+//let promise = fetch ("https://swapi.dev/api/people/");
+//.then(response => response.json())
+//.then(json => createP(json.word))
+//.catch(err => console.log(err));
+
+// for ( i = 0; i < data.results.length, i++) {
+//   names = names + data.results[i].name
+// }
+
+// function handleclick(e) => {
+
+// }
