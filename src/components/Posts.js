@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import ReactPaginate from "react-paginate";
 
 export default function Posts() {
   const [characterList, setCharacterList] = useState([]);
-  const [pageNumber, setPageNumber] = useState(0);
 
   useEffect(() => {
     getCharacters("https://swapi.dev/api/people/");
@@ -31,14 +29,6 @@ export default function Posts() {
       });
     });
   };
-
-  // const = (url) => {
-  //   axios.get(url).then((response) => {
-  //   console.log(res.data.next);
-  //   setCharacterList(res.data.results);
-  //   if(res.data.next) setNext(res.data.next)
-  //   });
-  // };
 
   // function showDetail(data) {
   //   for (i = 0; i < data.results.length; i++) {
