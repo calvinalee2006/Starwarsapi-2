@@ -5,7 +5,7 @@ import "./styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <React>
     <App />
-  </React.StrictMode>
+  </React>
 );
